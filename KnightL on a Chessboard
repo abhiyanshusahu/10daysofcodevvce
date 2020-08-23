@@ -1,57 +1,91 @@
-#include <bits/stdc++.h>
+import java.util.*;
 
-using namespace std;
+public class Solution {
 
-int Knight(int n, int a, int b) {
-  vector<vector<int>> cache(n, vector<int>(n, INT_MAX));
-  queue<pair<int, int>> q;
-  q.push(make_pair(0, 0));
-  cache[0][0] = 0;
-  while (!q.empty()) {
-    pair<int, int> position = q.front();
-    q.pop();
-
-    int currentCounter = cache[position.first][position.second] + 1;
-
-    vector<pair<int, int>> nextPositions = {
-        make_pair(position.first + a, position.second + b),
-        make_pair(position.first - a, position.second + b),
-        make_pair(position.first - a, position.second - b),
-        make_pair(position.first + a, position.second - b),
-        make_pair(position.first + b, position.second + a),
-        make_pair(position.first - b, position.second + a),
-        make_pair(position.first - b, position.second - a),
-        make_pair(position.first + b, position.second - a)
-    };
-
-    for (int i = 0; i < nextPositions.size(); i++) {
-      pair<int, int> tmp = nextPositions[i];
-      int x = tmp.first, y = tmp.second;
-      if (0 <= x && x <= n - 1 && 0 <= y && y <= n - 1) {
-        if (cache[x][y] > currentCounter) {
-          cache[x][y] = currentCounter;
-          q.push(make_pair(x, y));
+    public static void minMoves(int size) {
+        HashMap<HashSet<Integer>,Integer> prev = new HashMap<HashSet<Integer>,Integer>();
+        for (int i = 1; i < size; i++) {
+            for (int j = 1; j < size; j++) {
+                System.out.print(minMoves(size, i, j, prev) + " ");
+            }
+            System.out.println();
         }
-      }
     }
-  }
-
-
-  if (cache[n-1][n-1] == INT_MAX) {
-    return -1;
-  }
-
-  return cache[n-1][n-1];
-}
-
-int main() {
-  int n;
-  cin >> n;
-  for (int i = 1; i < n; i++) {
-    for (int j = 1; j < n; j++) {
-      cout << Knight(n, i, j) << " ";
+    
+    public static int minMoves(int size, int a, int b, HashMap prev) {
+        
+        HashSet<Integer> s = new HashSet<Integer>();
+        s.add(a);
+        s.add(b);
+        if (prev.containsKey(s)){
+            return (int) prev.get(s);
+        }
+        
+       
+        int[][] grid = new int[size][size];
+        
+        LinkedList<int[]> toVisit = new LinkedList<int[]>();
+        int[] start = {0, 0};
+        toVisit.add(start);
+        while (!(toVisit.isEmpty())) {
+            int[] cell = toVisit.remove();
+            ArrayList<int[]> reachable = reachable(size, cell[0], cell[1], a, b);
+            for (int[] next_cell : reachable) {
+                if (grid[next_cell[0]][next_cell[1]] == 0) {
+                    grid[next_cell[0]][next_cell[1]] = grid[cell[0]][cell[1]] + 1;
+                    toVisit.add(next_cell);
+                }
+                if ((next_cell[0] == size-1) && (next_cell[1] == size-1)) {
+                    HashSet<Integer> n = new HashSet<Integer>();
+                    n.add(a);
+                    n.add(b);
+                    prev.put(n, grid[size-1][size-1]);
+                    return grid[size-1][size-1];
+                }
+            }
+        }
+        if (grid[size-1][size-1] == 0) {
+            HashSet<Integer> n = new HashSet<Integer>();
+            n.add(a);
+            n.add(b);
+            prev.put(n, -1);
+            return -1;
+        }
+        HashSet<Integer> n = new HashSet<Integer>();
+        n.add(a);
+        n.add(b);
+        prev.put(n, grid[size-1][size-1]);
+        return grid[size-1][size-1];
     }
-    cout << "\n";
-  }
-  return 0;
+    
+    public static ArrayList<int[]> reachable(int size, int x, int y, int a, int b) {
+        ArrayList<int[]> children = new ArrayList<int[]>();
+        for (int i = -1; i<2; i+=2) {
+            for (int j = -1; j<2; j+=2) {
+                int new_x = x + (i*a);
+                int new_y = y + (j*b);
+                int[] cell = {new_x, new_y};
+                if (isValid(size, cell)) { children.add(cell); }
+            }
+        }
+        for (int i = -1; i<2; i+=2) {
+            for (int j = -1; j<2; j+=2) {
+                int new_x = x + (i*b);
+                int new_y = y + (j*a);
+                int[] cell = {new_x, new_y};
+                if (isValid(size, cell)) { children.add(cell); }
+            }
+        }
+        return children;
+    }
+    
+    public static boolean isValid(int size, int[] cell) {
+        return ((cell[0]<size) && (cell[1]< size) && (cell[0] >=0) && (cell[1] >=0));
+    }
+
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int n = in.nextInt();
+        minMoves(n);
+    }
 }
