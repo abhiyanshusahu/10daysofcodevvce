@@ -1,0 +1,66 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.math.BigInteger;
+import java.util.StringTokenizer;
+
+class LittlePandaPower {
+    static class InputReader {
+        private BufferedReader br;
+        private String inputFile = "";
+        private StringTokenizer sz;
+        private final String DELIM = " ";
+
+
+        public InputReader(InputStream in) {
+            br = new BufferedReader(new InputStreamReader(in));
+            sz = new StringTokenizer(inputFile, DELIM);
+        }
+
+        public String next() {
+            if (sz.hasMoreTokens()) {
+                return sz.nextToken();
+            }
+            try {
+                sz = new StringTokenizer(br.readLine(), DELIM);
+            } catch (IOException ex) {
+            }
+            return sz.nextToken();
+        }
+
+        public long nextLong() {
+            return Long.parseLong(next());
+        }
+
+        public int nextInt() {
+            return Integer.parseInt(next());
+        }
+
+    }
+
+    public static void solve() {
+        InputReader ir = new InputReader(System.in);
+        int t = ir.nextInt();
+        for (int i = 0; i < t; i++) {
+            int a = ir.nextInt();
+            int b = ir.nextInt();
+            int x = ir.nextInt();
+            BigInteger A = new BigInteger(String.valueOf(a));
+            BigInteger B = new BigInteger(String.valueOf(b));
+            BigInteger X = new BigInteger(String.valueOf(x));
+            if (b < 0) {
+                B = B.negate();
+                BigInteger modInv = A.modInverse(X);
+                System.out.println(modInv.modPow(B, X));
+            } else {
+                System.out.println(A.modPow(B, X));
+            }
+        }
+    }
+}
+public class Solution {
+    public static void main(String[] args) {
+        LittlePandaPower.solve();
+    }
+}
